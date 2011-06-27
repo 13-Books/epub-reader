@@ -1,0 +1,9 @@
+A simple python script to unpack/parse epub books so they can be read on the command line.
+
+REQUIRES:
+
+zipfile
+lxml
+BeautifulSoup
+django
+textwrap
