@@ -18,11 +18,10 @@ def main(screen):
         contents  = wrap(smart_str(contents), int(math.floor(curses.COLS * .8)))
         y = 0
         for line in contents:
-            if(y < curses.LINES - 2):
-                screen.addstr(y, 0, line + "\n")
-                y = y+1
-                screen.refresh()
-            else:
+            screen.addstr(y, 0, line + "\n")
+            y = y+1
+            screen.refresh()
+            if(y > curses.LINES - 2):
                 #Wait for user input
                 c = screen.getch()
                 if c == ord('c'): break;
