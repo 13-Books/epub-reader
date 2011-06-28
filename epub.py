@@ -29,7 +29,9 @@ def main(screen):
                 elif c == ord('q'): exit()  # Exit the while()
                 screen.clear()
                 y = 0
-
+        #If the chapter didn't end cleanly at the end of the page, hold until the reader is ready to move on
+        if(y != 0):
+            c = screen.getch()
         #Clean the screen for each new chapter
         screen.clear()
 
