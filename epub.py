@@ -15,7 +15,7 @@ def main(screen):
             continue
         contents = read_chapter(book, chapter)
         contents = ''.join(BeautifulSoup(contents).findAll("body",text=True))
-        contents  = wrap(smart_str(contents), math.floor(curses.COLS * .8))
+        contents  = wrap(smart_str(contents), int(math.floor(curses.COLS * .8)))
         y = 0
         for line in contents:
             if(y < curses.LINES - 2):
@@ -31,6 +31,7 @@ def main(screen):
                 y = 0
         #If the chapter didn't end cleanly at the end of the page, hold until the reader is ready to move on
         if(y != 0):
+            screen.hline(y, 0, '-', int(math.floor(curses.COLS * .8)))
             c = screen.getch()
         #Clean the screen for each new chapter
         screen.clear()
