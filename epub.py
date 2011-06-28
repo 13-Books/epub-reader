@@ -5,21 +5,33 @@ import sys
 from BeautifulSoup import BeautifulSoup
 from django.utils.encoding import smart_str, smart_unicode
 from textwrap import wrap, fill, dedent
+import curses
+import math
 
+def main(screen):
+    book = sys.argv[1]
+    for chapter in get_epub_files(book):
+        if "htm" not in chapter:
+            continue
+        contents = read_chapter(book, chapter)
+        contents = ''.join(BeautifulSoup(contents).findAll("body",text=True))
+        contents  = wrap(smart_str(contents), math.floor(curses.COLS * .8))
+        y = 0
+        for line in contents:
+            if(y < curses.LINES - 2):
+                screen.addstr(y, 0, line + "\n")
+                y = y+1
+                screen.refresh()
+            else:
+                #Wait for user input
+                c = screen.getch()
+                if c == ord('p'): continue
+                elif c == ord('q'): break  # Exit the while()
+                elif c == curses.KEY_HOME: x = y = 0
+                screen.clear()
 
-def main(argv):
-    if(len(argv) > 1):
-        for filename in get_epub_files(sys.argv[1]):
-            if "htm" not in filename:
-                continue
-            contents = read_chapter(sys.argv[1], filename)
-            htmlless = ''.join(BeautifulSoup(contents).findAll("body",text=True))
-            htmlless.replace("&nbsp;", " ")
-            print "*"*80
-            print filename
-            print "*"*80
-            print dedent(fill(smart_str(htmlless), 80))
-            print "*"*80
+        #Clean the screen for each new chapter
+        screen.clear()
 
 def read_chapter(fname, filename):
     zip = zipfile.ZipFile(fname)
@@ -82,5 +94,7 @@ def get_epub_info(fname):
     return res
 
 if __name__ == "__main__":
-    main(sys.argv)
+    if(len(sys.argv) < 2):
+        exit()
+    curses.wrapper(main)
 
