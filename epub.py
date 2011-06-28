@@ -25,10 +25,10 @@ def main(screen):
             else:
                 #Wait for user input
                 c = screen.getch()
-                if c == ord('p'): continue
-                elif c == ord('q'): break  # Exit the while()
-                elif c == curses.KEY_HOME: x = y = 0
+                if c == ord('c'): break;
+                elif c == ord('q'): exit()  # Exit the while()
                 screen.clear()
+                y = 0
 
         #Clean the screen for each new chapter
         screen.clear()
