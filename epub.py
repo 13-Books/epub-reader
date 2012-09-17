@@ -3,7 +3,7 @@ import zipfile
 from lxml import etree
 import sys
 from BeautifulSoup import BeautifulSoup
-from textwrap import wrap, fill, dedent
+from textwrap import TextWrapper
 import curses
 import math
 import urllib2
@@ -13,15 +13,19 @@ locale.setlocale(locale.LC_ALL,"")
 def main(screen):
     book = sys.argv[1]
     width = min(int(math.floor(curses.COLS * .8)), 80)
+    wrapper = TextWrapper(width=width)
     for chapter in get_epub_files(book):
         if "htm" not in chapter:
             continue
         contents = read_chapter(book, chapter)
         contents = ''.join(BeautifulSoup(contents).findAll("body",text=True))
-        contents  = wrap(contents.encode("utf-8"), width)
+        contents  = wrapper.wrap(contents.encode("utf-8"))
         y = 0
         for line in contents:
-            screen.addstr(y, 0, line + "\n")
+            if("\n" in line):
+                screen.addstr(y, 0, line)
+            else:
+                screen.addstr(y, 0, line + "\n")
             y = y+1
             screen.refresh()
             if(y > curses.LINES - 2):
