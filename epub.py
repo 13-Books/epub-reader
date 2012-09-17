@@ -3,21 +3,22 @@ import zipfile
 from lxml import etree
 import sys
 from BeautifulSoup import BeautifulSoup
-from django.utils.encoding import smart_str, smart_unicode
 from textwrap import wrap, fill, dedent
 import curses
 import math
 import urllib2
+import locale
+locale.setlocale(locale.LC_ALL,"")
 
 def main(screen):
     book = sys.argv[1]
-    width = int(math.floor(curses.COLS * .8))
+    width = min(int(math.floor(curses.COLS * .8)), 80)
     for chapter in get_epub_files(book):
         if "htm" not in chapter:
             continue
         contents = read_chapter(book, chapter)
         contents = ''.join(BeautifulSoup(contents).findAll("body",text=True))
-        contents  = wrap(smart_str(contents), width)
+        contents  = wrap(contents.encode("utf-8"), width)
         y = 0
         for line in contents:
             screen.addstr(y, 0, line + "\n")
