@@ -3,29 +3,29 @@ import zipfile
 from lxml import etree
 import sys
 from BeautifulSoup import BeautifulSoup
-from textwrap import TextWrapper
+import textwrap
 import curses
 import math
 import urllib2
 import locale
 locale.setlocale(locale.LC_ALL,"")
 
+#http://bugs.python.org/issue1859
+def wrap_paragraphs(text, width=70, **kwargs):
+    return [line for para in text.splitlines() for line in textwrap.wrap(para, width, **kwargs) or ['']]
+
 def main(screen):
     book = sys.argv[1]
     width = min(int(math.floor(curses.COLS * .8)), 80)
-    wrapper = TextWrapper(width=width)
     for chapter in get_epub_files(book):
         if "htm" not in chapter:
             continue
         contents = read_chapter(book, chapter)
         contents = ''.join(BeautifulSoup(contents).findAll("body",text=True))
-        contents  = wrapper.wrap(contents.encode("utf-8"))
+        contents = wrap_paragraphs(contents.encode("utf-8"), width=width)
         y = 0
         for line in contents:
-            if("\n" in line):
-                screen.addstr(y, 0, line)
-            else:
-                screen.addstr(y, 0, line + "\n")
+            screen.addstr(y, 0, line + "\n")
             y = y+1
             screen.refresh()
             if(y > curses.LINES - 2):
