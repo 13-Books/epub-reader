@@ -33,7 +33,10 @@ def main(screen):
         contents = wrap_paragraphs(contents.encode("utf-8"), width=width)
         y = 0
         for line in contents:
-            screen.addstr(y, 0, line + "\n")
+            if(line.isupper()):
+                screen.addstr(y, 0, line + "\n", curses.A_BOLD)
+            else:
+                screen.addstr(y, 0, line + "\n")
             y = y + 1
             screen.refresh()
             if(y > curses.LINES - 2):
@@ -41,7 +44,7 @@ def main(screen):
                 c = screen.getch()
                 screen.clear()
                 y = 0
-                if c == ord('c'): 
+                if c == ord('c'):
                     break #Next chapter
                 elif c == ord('q'):
                     cleanup_and_quit(screen)
