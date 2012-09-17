@@ -7,15 +7,17 @@ from django.utils.encoding import smart_str, smart_unicode
 from textwrap import wrap, fill, dedent
 import curses
 import math
+import urllib2
 
 def main(screen):
     book = sys.argv[1]
+    width = int(math.floor(curses.COLS * .8))
     for chapter in get_epub_files(book):
         if "htm" not in chapter:
             continue
         contents = read_chapter(book, chapter)
         contents = ''.join(BeautifulSoup(contents).findAll("body",text=True))
-        contents  = wrap(smart_str(contents), int(math.floor(curses.COLS * .8)))
+        contents  = wrap(smart_str(contents), width)
         y = 0
         for line in contents:
             screen.addstr(y, 0, line + "\n")
@@ -30,7 +32,7 @@ def main(screen):
                 y = 0
         #If the chapter didn't end cleanly at the end of the page, hold until the reader is ready to move on
         if(y != 0):
-            screen.hline(y, 0, '-', int(math.floor(curses.COLS * .8)))
+            screen.hline(y, 0, '-', width)
             c = screen.getch()
         #Clean the screen for each new chapter
         screen.clear()
@@ -39,7 +41,7 @@ def read_chapter(fname, filename):
     zip = zipfile.ZipFile(fname)
 
     # find the contents metafile
-    txt = zip.read("OEBPS/" + filename)
+    txt = zip.read("OEBPS/" + urllib2.unquote(filename))
     return txt
 
 def get_epub_files(fname):
