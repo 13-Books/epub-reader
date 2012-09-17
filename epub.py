@@ -14,7 +14,15 @@ locale.setlocale(locale.LC_ALL,"")
 def wrap_paragraphs(text, width=70, **kwargs):
     return [line for para in text.splitlines() for line in textwrap.wrap(para, width, **kwargs) or ['']]
 
+def cleanup_and_quit(screen):
+    curses.nocbreak()
+    screen.keypad(0)
+    curses.echo()
+    exit()
+
+
 def main(screen):
+    screen.keypad(1)
     book = sys.argv[1]
     width = min(int(math.floor(curses.COLS * .8)), 80)
     for chapter in get_epub_files(book):
@@ -26,19 +34,29 @@ def main(screen):
         y = 0
         for line in contents:
             screen.addstr(y, 0, line + "\n")
-            y = y+1
+            y = y + 1
             screen.refresh()
             if(y > curses.LINES - 2):
                 #Wait for user input
                 c = screen.getch()
-                if c == ord('c'): break;
-                elif c == ord('q'): exit()  # Exit the while()
                 screen.clear()
                 y = 0
+                if c == ord('c'): 
+                    break #Next chapter
+                elif c == ord('q'):
+                    cleanup_and_quit(screen)
+                elif c == curses.KEY_DOWN:
+                    pass
+                elif c == curses.KEY_UP:
+                    continue
+
         #If the chapter didn't end cleanly at the end of the page, hold until the reader is ready to move on
         if(y != 0):
             screen.hline(y, 0, '-', width)
             c = screen.getch()
+            if c == ord('q'):
+                cleanup_and_quit(screen)
+
         #Clean the screen for each new chapter
         screen.clear()
 
