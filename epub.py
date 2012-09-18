@@ -29,7 +29,7 @@ def main(screen):
         if "htm" not in chapter:
             continue
         contents = read_chapter(book, chapter)
-        contents = ''.join(BeautifulSoup(contents).findAll("body",text=True))
+        contents = ' '.join(BeautifulSoup(contents).findAll("body",text=True))
         contents = wrap_paragraphs(contents.encode("utf-8"), width=width)
         y = 0
         for line in contents:
